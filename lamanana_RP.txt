@@ -1,0 +1,27 @@
+Que les feuilles des joueurs.
+Capacités : 
+ - 
+
+Actions possibles :
+ - se reposer (nb d'heures)
+ - voir sa feuille
+
+Notes :
+    - Avoir des lancers de dé
+    - 8 caractéristiques (5 niveaux)
+    - Points de Vie (20 plus ou moins 4)
+    - blessures graves
+    - deux capacités de départ (identique pour tout le monde) + 1 d'espèce (pouvoir)
+    - armes à gérer avec le niveau, nom catégorie, description
+    - Monnaie : or et cuivre (100 cuivre = 1 or)
+    - armures (réduction de dégât, agilité max) nom, pièces
+
+    - équipement portés / stockés
+    - capacité a acheter contre de l'XP
+
+    - compteur de capacité pour bloquer les achats de capacités
+
+- dés
+- capacités
+- équipements
+- PV (blessures graves, guérison naturelle)
