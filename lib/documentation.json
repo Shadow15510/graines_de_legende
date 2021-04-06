@@ -1,0 +1,50 @@
+{
+    "nouveau": [
+        [7, 7],
+        ["nom", "éthnie", "mauvais 1", "mauvais 2", "exellent 1", "exellent 2", "histoire"],
+        "Créer un nouveau joueur. Les quatres derniers arguments correspondent aux noms des caractériques mauvaises et exellentes, les autres sont automatiquement réglées sur moyen."
+    ],
+
+    "stat": [
+        [0, 1],
+        ["nom du joueur"],
+        "Consulter sa feuille de personnage"
+    ],
+
+    "blessure": [
+        [1, 2],
+        ["description", "nom du joueur"],
+        "Ajoute une blessure à un joueur ou à soit-même. Ajouter une blessure à un autre joueur nécessite d'être maitre du jeu."
+    ],
+
+    "test": [
+        [2, 2],
+        ["caractérique", "difficulté"],
+        "Effectue un test de caractéristique."
+    ],
+
+    "arme": [
+        [2, 5],
+        ["+ / -", "nom", "catégorie", "description", "bonus"],
+        "Pour ajouter un objet, les paramètres `catégorie` et`description` sont obligatoires.\nLe premier paramètre est soit '+' soit '-' selon si l'on ajoute une arme à l'inventaire ou si on la retire.\nLe troisième paramètre est à utilisé uniquement si il s'agit d'une arme naturelle."
+    ],
+
+    "armure": [
+        [2, 4],
+        ["+ / -", "nom", "categorie", "description"],
+        "Pour ajouter une armure, les deux derniers paramètre sont obligatoires."
+    ],
+
+    "bouclier": [
+        [2, 4],
+        ["+ / -", "nom", "description", "point de bouclier"],
+        "Vous permet d'ajouter, ou retirer un bouclier de votre inventaire."
+    ],
+
+    "note": [
+        [2, 2],
+        ["+ / -", "contenu / numéro"],
+        "Permet d'ajouter des notes (précisez le contenu) ou d'en supprimer une (précisez le numéro)."
+    ]
+
+}

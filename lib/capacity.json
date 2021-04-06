@@ -1,0 +1,9 @@
+{
+    "attaque de base": [1, 0, "attaque",
+                    "Vous attaquez avec une de vos armes",
+                    "Infligez 1d6 dégâts + bonus de l'arme."],
+
+    "lever son bouclier": [1, 0, "",
+                    "Si vous portez un bouclier, vous le brandissez en face de vous pour encaisser les coups",
+                    "Jusqu'à votre prochain tour, si vous devez subir des dégâts au corps-à-corps ou d'un projectile face à vous, réduisez les points de bouclier à la place de vos points de vie."]
+}
