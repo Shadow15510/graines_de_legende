@@ -80,7 +80,7 @@ Dans l'onglet OAuth2, descendez au niveau du cadre 'SCOPES' et selectionnez la c
 
 Avant de fermez la fenêtre, retournez dans l'onglet Bot et copiez le token.
 
-## Configurer Graines de Légende
+## Configurer Graines de Légendes
 
 Dans votre répertoire personnel, allez dans le dossier `graines_de_legendes` et créez un fichier `config.json`. Ouvrez-le et insérez-y le code suivant : 
 
@@ -101,7 +101,7 @@ Le sépérateur va séparer les arguments des commandes transmises au bot, de m�
 
 La liste ADMIN est la liste des idenficateurs des maîtres du jeux qui auront ainsi accès à quelques commandes supplémentaires (surtout pour modérer les joueurs). Pour connaître l'idenficateur d'une personne, activez le mode développeur de Discord et faîtes clique droit sur la personne, dernière ligne 'copier l'id'. Il s'agit bien d'un chiffre et non d'une chaîne de caractères.
 
-## Jouer avec Graines de Légende
+## Jouer avec Graines de Légendes
 
 ### Lancer le bot
 
@@ -119,6 +119,10 @@ Par exemple si le répertoire `graines_de_legendes` est stocké dans un dossier 
     
 `$ cd Bureau/bots_discord/graines_de_legendes && python gdl_main.py && exit`
 
+### Premières commandes
+
+La commande pour accéder à l'assistance est affichée dans le status personnalisé du bot. Par défaut la commande est `§aide`.
+
 ### Mettre le bot à jour
 
 Si votre version du bot n'est plus à jour, vous pouvez mettre à jour votre dépôt local en entrant : 
@@ -127,7 +131,7 @@ Si votre version du bot n'est plus à jour, vous pouvez mettre à jour votre dé
 
 dans un terminal.
 
-### Fichiers créés par le bot
+### Fichier créé par le bot
 
 Le seul fichier créé par le bot est `gdl_save.txt` qui contient toute les statistiques des joueurs. Ce fichier n'est pas crypté et est tout à fait modifiable à la main. Lorsque le bot est éteint, ce fichier constitue sa seule mémoire, le supprimer revient à détruire la partie.
 
