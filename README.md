@@ -58,7 +58,7 @@ Encore une fois, les procédures sont multiples et diffèrent de beaucoup suivan
 
 Ouvrez un terminal et entrez la commande : 
 
-    `$sudo pip3 install discord`
+`$ sudo pip3 install discord`
 
 Le terminal devrait vous demander le mot de passe administrateur et installer le module discord.py
 
@@ -66,7 +66,7 @@ Le terminal devrait vous demander le mot de passe administrateur et installer le
 
 Dans un terminal, entrez : 
 
-    `git clone https://github.com/Shadow15510/graines_de_legendes.git`
+`$ git clone https://github.com/Shadow15510/graines_de_legendes.git`
 
 Cette commande va copier l'intégralité du dépôts à la racine de votre répertoire personnel.
 
@@ -84,14 +84,14 @@ Avant de fermez la fenêtre, retournez dans l'onglet Bot et copiez le token.
 
 Dans votre répertoire personnel, allez dans le dossier `graines_de_legendes` et créez un fichier `config.json`. Ouvrez-le et insérez-y le code suivant : 
 
-    ```
+```
     {
         "TOKEN": < le token copié à l'étape précédente >,
         "PREFIX": "§",
         "SEPARATOR": ";",
         "ADMIN": []
     }
-    ```
+```
 
 À noter que le token doit être entre guillemets et doit rester secret.
 
@@ -107,23 +107,23 @@ La liste ADMIN est la liste des idenficateurs des maîtres du jeux qui auront ai
 
 Ouvrez un terminal et entrez : 
 
-    `$cd graines_de_legendes && python gdl_main.py && exit`
+`$ cd graines_de_legendes && python gdl_main.py && exit`
 
 Si vous avez un doute sur la version de python installée sur votre ordinateur, vous pouvez forcer l'utilisation de python 3 en entrant : 
 
-    `$cd graines_de_legendes && python3 gdl_main.py && exit`
+`$ cd graines_de_legendes && python3 gdl_main.py && exit`
 
 Si vous avez changé de place le répertoire `graines_de_legendes` il faut préciser le chemin relatif en partant de la racine de votre répertoire personnel au niveau du `$cd`.
 
 Par exemple si le répertoire `graines_de_legendes` est stocké dans un dossier `bots_discord` situé sur le bureau, la commande devient : 
     
-    `$cd Bureau/bots_discord/graines_de_legendes && python gdl_main.py && exit`
+`$ cd Bureau/bots_discord/graines_de_legendes && python gdl_main.py && exit`
 
 ### Mettre le bot à jour
 
 Si votre version du bot n'est plus à jour, vous pouvez mettre à jour votre dépôt local en entrant : 
 
-    `$cd graines_de_legendes && git pull`
+`$ cd graines_de_legendes && git pull`
 
 dans un terminal.
 
