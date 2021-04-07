@@ -187,5 +187,5 @@ class GeneralCommands(commands.Cog):
     @commands.command(name="aide", aliases=("assistance", "doc", "documentation"))
     async def aide(self, ctx):
         fields = [(command, f"{display_syntax(command, self.cmnd_data[command], *self.config[:2])}\n{self.cmnd_data[command][2]}", False) for command in self.cmnd_data]
-        embed = make_embed("Graines de Légende — assistance", "Liste de toutes les commandes disponibles.", 8421504, fields)
+        embed = make_embed("Graines de Légendes — assistance", "Liste de toutes les commandes disponibles.", 8421504, fields)
         await ctx.send(embed=embed)
