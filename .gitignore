@@ -1,4 +1,3 @@
 config.json
 gdl_save.txt
-graines_de_legendes.txt
-__pycache__/*
+lib/__pycache__/*
