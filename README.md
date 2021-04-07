@@ -4,7 +4,7 @@
 
 ### Principe
 
-Graines de Légendes est un système de jeu de rôle basé sur un des capacités que le joueur peut acheter avec son expérience.
+Graines de Légendes est un système de jeu de rôle basé sur des capacités que le joueur peut acheter avec son expérience.
 
 ### Bot Discord
 
