@@ -73,6 +73,11 @@ def get_id_from_nick(data_player, player_nick):
         if data_player[player_id].name == player_nick: return player_id
 
 
+# get_player_from_id : renvoie l'objet Player associé à l'id passé en argument
+def get_player_from_id(data_player, player_id):
+    if player_id in data_player: return data_player[player_id]
+
+
 # make_embed : fabrique un embed et le renvoie
 def make_embed(title, description, color, fields, image=None):
     answer = discord.Embed(title=title, description=description, color=color)

@@ -4,7 +4,7 @@ class Player:
         self.name = name
         self.species = species
         self.history = history
-        # stat : [Agilité - 0, Constitution - 1, Force - 2, Précision - 3,  Sens - 4, Social - 5, Survie - 6, Volonté - 7, (XP total, XP économisé) - 8, PV - 9, monnaie de cuivre - 10, couleur - 11]
+        # stat : [Agilité - 0, Constitution - 1, Force - 2, Précision - 3,  Sens - 4, Social - 5, Survie - 6, Volonté - 7, (XP total, XP économisé) - 8, PV - 9, monnaie de (or, cuivre) - 10, couleur - 11]
         self.stat = stat[:]
 
         if image: self.image = str(image)
@@ -21,7 +21,7 @@ class Player:
         self.capacities = [Capacity(*i) for i in capacities]
         self.notes = notes[:]
 
-    def export(self): return [self.id, self.name, self.species, self.stat, self.image, self.history,[i.export() for i in self.injuries], [i.export() for i in self.weapons], [i.export() for i in self.armors], [i.export() for i in self.shells], [i.export() for i in self.stuff], self.languages, [i.export() for i in self.capacities], self.notes]
+    def export(self): return [self.id, self.name, self.species, self.stat, self.image, self.history, [i.export() for i in self.injuries], [i.export() for i in self.weapons], [i.export() for i in self.armors], [i.export() for i in self.shells], [i.export() for i in self.stuff], self.languages, [i.export() for i in self.capacities], self.notes]
 
     def isalive(self): return self.stat[9] > 0
 
@@ -29,7 +29,7 @@ class Player:
 
     def max_pv(self): return (10, 16, 20, 24, 30)[self.stat[1]]
 
-    def get_money(self): return self.stat[10] // 100, self.stat[10] % 100 # renvoie (or, cuivre)
+    def get_money(self): return self.stat[10] # renvoie (or, cuivre)
 
     def get_minimum(self, name): return 6 - self.stat[("agilité", "constitution", "force", "précision", "sens", "social", "survie", "volonté").index(name.lower())] # score au dé minimum à obtenir pour valider le lancer
 
@@ -60,6 +60,18 @@ class Player:
             return True
 
         else: return False
+
+    # item = [args dans l'ordre de l'objet]
+    def add_item(self, item, category):
+        if not self.have_item(item[0])[0]:
+            if category == 0:
+                self.weapons.append(Weapon(*item))
+            elif category == 1:
+                self.armors.append(Armor(*item))
+            elif category == 2:
+                self.shells.append(Shell(*item))
+            return True
+        return False
     
     # 0 : objet non possédé ; 1 : pas assez d'objet ; 2 : succès
     def use_stuff(self, stuff_name, nb):

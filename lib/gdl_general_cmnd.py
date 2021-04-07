@@ -12,11 +12,6 @@ class GeneralCommands(commands.Cog):
         self.player_data = player_data
         self.cmnd_data = cmnd_data
 
-
-    def __save(self):
-        export_save(self.player_data)
-
-
     @commands.command()
     async def nouveau(self, ctx, *, args=None):
         args = analize(args, self.config[1])
@@ -32,7 +27,7 @@ class GeneralCommands(commands.Cog):
 
             stat_bad = spec.index(args[2].lower()), spec.index(args[3].lower())
             stat_excellent = spec.index(args[4].lower()), spec.index(args[5].lower())
-            stat_default = ([1, 1], 20, 1000, randint(0, 16777215)) # XP, PV, monnaie de cuivre, couleur
+            stat_default = ([1, 1], 20, [10, 0], randint(0, 16777215)) # XP, PV, monnaie de cuivre, couleur
             
             stat = [2 for i in range(12)]
 
@@ -48,7 +43,7 @@ class GeneralCommands(commands.Cog):
 
             await ctx.send(f"{args[0]} enregistré.")
 
-            self.__save()
+            export_save(self.player_data)
 
 
     @commands.command(name="stat", aliases=("info", "information", "informations", "statistique", "statistiques"))
@@ -71,7 +66,7 @@ class GeneralCommands(commands.Cog):
 
         player = self.player_data[target]
 
-        gold, copper = player.get_money()
+        gold, copper = player.stat[10]
 
         if player.injuries: injuries = "\n".join([f" ❖ {i.description}" for i in player.injuries])
         else: injuries = "< aucune blessure >"
@@ -92,7 +87,7 @@ class GeneralCommands(commands.Cog):
             shell = "< aucun bouclier >"
 
         if player.stuff:
-            stuff = "\n".join([f" ❖ {i.name} {(' (nombre restant : {} ) '.format(i.nb_use), '')[i.nb_use == 1]}" for i in player.stuff])
+            stuff = "\n".join([f" ❖ {i.name} {(' ({}) '.format(i.nb_use), '')[i.nb_use == 1]}" for i in player.stuff])
         else:
             stuff = "< aucun équipement > "
 
@@ -139,7 +134,7 @@ class GeneralCommands(commands.Cog):
 
         self.player_data = {}
         print("Sauvegarde formatée")
-        self.__save()
+        export_save({})
 
 
     @commands.command()
@@ -150,7 +145,10 @@ class GeneralCommands(commands.Cog):
             await ctx.send(error("note", self.cmnd_data, *self.config[:2]))
             return
 
-        player = self.player_data[ctx.author.id]
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
 
         if args[0] == "+":
             player.add_note(args[1])
@@ -160,7 +158,7 @@ class GeneralCommands(commands.Cog):
             if result: await ctx.send(f"Vous avez supprimé la note :\n> {result}")
             else: await ctx.send(f"*Erreur : la note n°{args[1]} n'existe pas.*")
 
-        self.__save()
+        export_save(self.player_data)
 
 
     @commands.command()
@@ -182,10 +180,115 @@ class GeneralCommands(commands.Cog):
         player.injuries.append(Injury(args[0]))
         await ctx.send(f"{player.name} est blessé.e ! {args[0]}")
 
-        self.__save()
+        export_save(self.player_data)
 
     @commands.command(name="aide", aliases=("assistance", "doc", "documentation"))
     async def aide(self, ctx):
         fields = [(command, f"{display_syntax(command, self.cmnd_data[command], *self.config[:2])}\n{self.cmnd_data[command][2]}", False) for command in self.cmnd_data]
         embed = make_embed("Graines de Légendes — assistance", "Liste de toutes les commandes disponibles.", 8421504, fields)
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def inventaire(self, ctx):
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        if player.weapons:
+            weapons = "\n".join([f" ❖ **{i.name}** {i.category}, bonus de l'arme : {i.bonus}\n*{i.description}*" for i in player.weapons])
+        else:
+            weapons = "< aucune arme >"
+
+        if player.armors:
+            armors = "\n".join([f" ❖ **{i.name}** {i.category}, RD : {i.stat[0]}, PA : {i.stat[1]}, Agilité maximale : {('Exécrable', 'Mauvais', 'Moyen', 'Excellent', 'Mythique')[i.stat[2]]}\n*{i.description}*" for i in player.armors])
+        else:
+            armors = "< aucune armure >"
+
+        if player.shells:
+            shells = "\n".join([f" ❖ **{i.name}** Points de bouclier : {i.shell_points}\n*{i.description}*" for i in player.shells])
+        else:
+            shells = "< aucun bouclier >"
+
+        if player.stuff:
+            stuff = "\n".join([f" ❖ **{i.name}** nombre restant : {i.nb_use}\n*{i.description}*" for i in player.stuff])
+        else:
+            stuff = "< aucun équipement >"
+
+        gold, copper = player.stat[10]
+        fields = [("Richesse", f"{gold} Pièce{('', 's')[gold > 1]} d'or\n{copper} Pièce{('', 's')[copper > 1]} de cuivre", False), ("Armes", weapons, False), ("Armures", armors, False), ("Boucliers", shells, False), ("Équipement", stuff, False)]
+        embed = make_embed(f"Inventaire de {player.name}", "Description de l'inventaire", player.stat[11], fields, player.image)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def langue(self, ctx, *, args=None):
+        args = analize(args, self.config[1])
+
+        if len(args) != 2:
+            await ctx.send(error("langue", self.cmnd_data, *self.config[:2]))
+            return
+
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        if args[0] == "+":
+            player.languages.append(args[1])
+            await ctx.send(f"{player.name} apprend une nouvelle langue : '{args[1]}'.")
+        else:
+            if args[1] in player.languages:
+                player.languages.remove(args[1])
+                await ctx.send(f"{player.name} oublie une langue : '{args[1]}'.")
+            else:
+                await ctx.send(f"*Erreur : {player.name} ne connaît pas la langue : '{args[1]}'.*")
+
+        export_save(self.player_data)
+
+    @commands.command()
+    async def richesse(self, ctx, *, args=None):
+        args = analize(args, self.config[1])
+
+        if len(args) != 3:
+            await ctx.send(error("richesse", self.cmnd_data, *self.config[:2]))
+            return
+
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        if args[0] == "+":
+
+            player.stat[10][0] += args[1]
+            player.stat[10][1] += args[2]
+            action = "reçoit"
+        else:
+            if args[1] > player.stat[10][0] or (args[2] > player.stat[10][1] + 100 * player.stat[10][0]):
+                await ctx.send(f"*Erreur : {player.name} n'a pas assez de richesse.*")
+                return
+            else:
+                while args[2] > player.stat[10][1]:
+                    player.stat[10][0] -= 1
+                    player.stat[10][1] += 100
+
+            player.stat[10][0] -= args[1]
+            player.stat[10][1] -= args[2]
+            action = "donne"
+                
+        if args[1]:
+            if args[2]:
+                answer = f"{player.name} {action} {args[1]} pièce{('', 's')[args[1] > 1]} d'or et {args[2]} pièce{('', 's')[args[2] > 1]} de cuivre."
+            else:
+                answer = f"{player.name} {action} {args[1]} pièce{('', 's')[args[1] > 1]} d'or."
+        else:
+            if args[2]:
+                answer = f"{player.name} {action} {args[2]} pièce{('', 's')[args[2] > 1]} de cuivre."
+            else:
+                answer = f"{player.name} ne {action} rien."
+
+        await ctx.send(answer)
+
+        export_save(self.player_data)
+
+

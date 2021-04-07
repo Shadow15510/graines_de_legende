@@ -51,6 +51,24 @@
         [2, 2],
         ["+ / -", "contenu / numéro"],
         "Permet d'ajouter des notes (précisez le contenu) ou d'en supprimer une (précisez le numéro)."
+    ],
+
+    "langue": [
+        [2, 2],
+        ["+ / -", "nom de la langue"],
+        "Ajoute ou enlève une langue."
+    ],
+
+    "inventaire": [
+        [0, 0],
+        [],
+        "Affiche le contenu de votre inventaire"
+    ],
+
+    "richesse": [
+        [3, 3],
+        ["+ / -", "pièces d'or", "pièces de cuivre"],
+        "Ajoute ou enlève des pièces d'or et de cuivre à vos richesses."
     ]
 
 }

@@ -11,11 +11,6 @@ class StuffCommands(commands.Cog):
         self.player_data = player_data
         self.cmnd_data = cmnd_data
 
-
-    def __save(self):
-        export_save(self.player_data)
-
-
     @commands.command()
     async def arme(self, ctx, *, args=None):
         args = analize(args, self.config[1])
@@ -24,17 +19,20 @@ class StuffCommands(commands.Cog):
             await ctx.send(error("arme", self.cmnd_data, *self.config[:2]))
             return
 
-        player = self.player_data[ctx.author.id]
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
 
         if args[0] == "+":
             if len(args) < 4:
                 await ctx.send(error("arme", self.cmnd_data, *self.config[:2]))
                 return
 
-            if not player.have_item(args[1])[0]:
-                if len(args) == 5: bonus = args[4]
-                else: bonus = 0
-                player.weapons.append(Weapon(args[1], args[2], args[3], get_weapon_bonus(args[2], bonus)))
+            if len(args) == 5: bonus = args[4]
+            else: bonus = 0
+
+            if player.add_item((args[1], args[2], args[3], get_weapon_bonus(args[2], bonus)), 0):
                 await ctx.send(f"{player.name} reçoit : '{args[1]}'")
             else:
                 await ctx.send(f"*Erreur : {player.name} a déjà cette arme.*")
@@ -49,7 +47,7 @@ class StuffCommands(commands.Cog):
             else:
                 await ctx.send(f"*Erreur : {player.name} n'a pas d'arme portant le nom : '{args[1]}'.*") 
 
-        self.__save()
+        export_save(self.player_data)
 
     @commands.command()
     async def armure(self, ctx, *, args=None):
@@ -59,16 +57,18 @@ class StuffCommands(commands.Cog):
             await ctx.send(error("armure", self.cmnd_data, *self.config[:2]))
             return
 
-        player = self.player_data[ctx.author.id]
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
 
         if args[0] == "+":
             if len(args) < 4:
                 await ctx.send(error("armure", self.cmnd_data, *self.config[:2]))
                 return
 
-            if not player.have_item(args[1])[0]:
-                stat = get_armor_stat(args[2])
-                player.armors.append(Armor(args[1], args[2], args[3], stat))
+            stat = get_armor_stat(args[2])
+            if player.add_item((args[1], args[2], args[3], stat), 1):
                 if player.stat[0] > stat[2]: player.stat[0] = stat[2]
                 await ctx.send(f"{player.name} reçoit : '{args[1]}'")
             else:
@@ -84,7 +84,7 @@ class StuffCommands(commands.Cog):
             else:
                 await ctx.send(f"*Erreur : {player.name} n'a pas d'armure portant le nom : '{args[1]}'.*") 
 
-        self.__save()
+        export_save(self.player_data)
 
 
     @commands.command()
@@ -95,15 +95,17 @@ class StuffCommands(commands.Cog):
             await ctx.send(error("bouclier", self.cmnd_data, *self.config[:2]))
             return
 
-        player = self.player_data[ctx.author.id]
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
 
         if args[0] == "+":
             if len(args) < 4:
                 await ctx.send(error("bouclier", self.cmnd_data, *self.config[:2]))
                 return
 
-            if not player.have_item(args[1])[0]:
-                player.shells.append(Shell(args[1], args[2], args[3]))
+            if player.add_item((args[1], args[2], args[3]), 2):
                 await ctx.send(f"{player.name} reçoit : '{args[1]}'")
             else:
                 await ctx.send(f"*Erreur : {player.name} a déjà ce bouclier.*")
@@ -118,7 +120,7 @@ class StuffCommands(commands.Cog):
             else:
                 await ctx.send(f"*Erreur : {player.name} n'a pas de bouclier portant le nom : '{args[1]}'.*") 
 
-        self.__save()
+        export_save(self.player_data)
 
     @commands.command(name="objet", aliases=("équipement", "stuff"))
     async def objet(self, ctx, *, args=None):
@@ -128,7 +130,10 @@ class StuffCommands(commands.Cog):
             await ctx.send(error("objet", self.cmnd_data, *self.config[:2]))
             return
 
-        player = self.player_data[ctx.author.id]
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
 
         if args[0] == "+":
             have = player.have_item(args[2])
@@ -154,5 +159,5 @@ class StuffCommands(commands.Cog):
 
                 await ctx.send(f"{player.name} a utilisé l'objet : '{args[2]}'\n{result}")
 
-        self.__save()
+        export_save(self.player_data)
 
