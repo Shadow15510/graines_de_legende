@@ -16,7 +16,7 @@ Le bot et tous les fichiers de ce dépôt sont soumis à une licence GNU General
 
 Cette licence ne concerne que le bot et ne s'applique pas au système en lui-même qui reste la propriété exclusive de son auteure.
 
-## Installer Graines de Légende sur un serveur
+## Installer Graines de Légendes sur un serveur
 
 L'installation ne nécessite aucune compétence particulière. Il sera néanmoins nécessaire d'avoir quelques dépendances à savoir : 
 
