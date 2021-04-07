@@ -1,4 +1,4 @@
-# Graines de Légende
+# Graines de Légendes
 
 ## Présentation
 

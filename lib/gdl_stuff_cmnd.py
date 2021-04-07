@@ -37,7 +37,7 @@ class StuffCommands(commands.Cog):
                 player.weapons.append(Weapon(args[1], args[2], args[3], get_weapon_bonus(args[2], bonus)))
                 await ctx.send(f"{player.name} reçoit : '{args[1]}'")
             else:
-                await ctx.send(f"*Vous avez déjà cette arme.*")
+                await ctx.send(f"*Erreur : {player.name} a déjà cette arme.*")
 
         else:
             if len(args) > 2:
@@ -45,9 +45,9 @@ class StuffCommands(commands.Cog):
                 return
 
             if player.del_item(args[1], 0):
-                await ctx.send(f"Vous n'avez plus l'arme : '{args[1]}'")
+                await ctx.send(f"{player.name} n'a plus l'arme : '{args[1]}'")
             else:
-                await ctx.send(f"*Erreur : Vous n'avez pas d'arme portant le nom : '{args[1]}'.*") 
+                await ctx.send(f"*Erreur : {player.name} n'a pas d'arme portant le nom : '{args[1]}'.*") 
 
         self.__save()
 
@@ -67,10 +67,12 @@ class StuffCommands(commands.Cog):
                 return
 
             if not player.have_item(args[1])[0]:
-                player.armors.append(Armor(args[1], args[2], args[3], get_armor_stat(args[2])))
+                stat = get_armor_stat(args[2])
+                player.armors.append(Armor(args[1], args[2], args[3], stat))
+                if player.stat[0] > stat[2]: player.stat[0] = stat[2]
                 await ctx.send(f"{player.name} reçoit : '{args[1]}'")
             else:
-                await ctx.send(f"*Vous avez déjà cette armure.*")
+                await ctx.send(f"*Erreur : {player.name} a déjà cette armure.*")
 
         else:
             if len(args) > 2:
@@ -78,9 +80,9 @@ class StuffCommands(commands.Cog):
                 return
 
             if player.del_item(args[1], 1):
-                await ctx.send(f"Vous n'avez plus l'armure : '{args[1]}'")
+                await ctx.send(f"{player.name} n'a plus l'armure : '{args[1]}'")
             else:
-                await ctx.send(f"*Erreur : Vous n'avez pas d'armure portant le nom : '{args[1]}'.*") 
+                await ctx.send(f"*Erreur : {player.name} n'a pas d'armure portant le nom : '{args[1]}'.*") 
 
         self.__save()
 
@@ -104,7 +106,7 @@ class StuffCommands(commands.Cog):
                 player.shells.append(Shell(args[1], args[2], args[3]))
                 await ctx.send(f"{player.name} reçoit : '{args[1]}'")
             else:
-                await ctx.send(f"*Vous avez déjà ce bouclier.*")
+                await ctx.send(f"*Erreur : {player.name} a déjà ce bouclier.*")
 
         else:
             if len(args) > 2:
@@ -112,9 +114,45 @@ class StuffCommands(commands.Cog):
                 return
 
             if player.del_item(args[1], 2):
-                await ctx.send(f"Vous n'avez plus le bouclier : '{args[1]}'")
+                await ctx.send(f"{player.name} n'a plus le bouclier : '{args[1]}'")
             else:
-                await ctx.send(f"*Erreur : Vous n'avez pas de bouclier portant le nom : '{args[1]}'.*") 
+                await ctx.send(f"*Erreur : {player.name} n'a pas de bouclier portant le nom : '{args[1]}'.*") 
+
+        self.__save()
+
+    @commands.command(name="objet", aliases=("équipement", "stuff"))
+    async def objet(self, ctx, *, args=None):
+        args = analize(args, self.config[1])
+
+        if not (self.cmnd_data["objet"][0][0] <= len(args) <= self.cmnd_data["objet"][0][1]):
+            await ctx.send(error("objet", self.cmnd_data, *self.config[:2]))
+            return
+
+        player = self.player_data[ctx.author.id]
+
+        if args[0] == "+":
+            have = player.have_item(args[2])
+            if have[1] == -1:
+                player.stuff.append(Stuff(args[2], args[3], args[1]))
+            else:
+                player.stuff[have[1]].nb_use += args[1]
+
+            await ctx.send(f"{player.name} reçoit : '{args[2]}' ({args[1]})")
+
+        else:
+            result = player.use_stuff(args[2], args[1])
+            if result == 0:
+                await ctx.send(f"*Erreur : {player.name} n'a pas d'objet portant le nom : '{args[2]}'.*") 
+            elif result == 1:
+                await ctx.send(f"*Erreur : {player.name} n'a pas l'objet '{args[2]}' en assez grand nombre.*")
+            else:
+                result = player.have_item(args[2])
+                if result[1] == -1:
+                    result = f"Vous n'avez plus l'objet : '{args[2]}'"
+                else:
+                    result = f"Il vous en reste {result[0][1][result[1]].nb_use}."
+
+                await ctx.send(f"{player.name} a utilisé l'objet : '{args[2]}'\n{result}")
 
         self.__save()
 

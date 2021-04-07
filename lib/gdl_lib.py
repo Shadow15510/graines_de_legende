@@ -88,7 +88,7 @@ def make_embed(title, description, color, fields, image=None):
 def export_save(data_player):
     print("Enregistrement de la partie")
     save = [data_player[player_id].export() for player_id in data_player]
-    with open("save.txt", "w") as file:
+    with open("gdl_save.txt", "w") as file:
         file.write(str(save))
 
 
@@ -96,13 +96,13 @@ def export_save(data_player):
 def load_save():
     print("Chargment de la partie")
     try:
-        with open("save.txt", "r") as file:
+        with open("gdl_save.txt", "r") as file:
             save = file.read()
         print("# partie chargée")
 
         return {player[0]: Player(*player) for player in eval(save)}
     except:
         print("# aucune partie trouvée\n# création d'une nouvelle partie")
-        with open("save.txt", "w") as file:
+        with open("gdl_save.txt", "w") as file:
             file.write("[]")
         return {}

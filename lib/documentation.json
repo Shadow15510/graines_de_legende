@@ -41,6 +41,12 @@
         "Vous permet d'ajouter, ou retirer un bouclier de votre inventaire."
     ],
 
+    "objet": [
+        [3, 4],
+        ["+ / -", "nombre", "nom", "description"],
+        "Ajoute ou enlève un objet de votre inventaire. Les objets apparaissent dans la case 'Équipement'. Il est possible d'avoir un plusieurs fois le objet (par exemple des flèches)."
+    ],
+
     "note": [
         [2, 2],
         ["+ / -", "contenu / numéro"],

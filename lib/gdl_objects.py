@@ -21,7 +21,7 @@ class Player:
         self.capacities = [Capacity(*i) for i in capacities]
         self.notes = notes[:]
 
-    def export(self): return [self.id, self.name, self.species, self.stat, self.image, self.history,[i.export() for i in self.injuries], [i.export() for i in self.weapons], [i.export() for i in self.armors], [i.export() for i in self.shells], [i.export for i in self.stuff], self.languages, [i.export() for i in self.capacities], self.notes]
+    def export(self): return [self.id, self.name, self.species, self.stat, self.image, self.history,[i.export() for i in self.injuries], [i.export() for i in self.weapons], [i.export() for i in self.armors], [i.export() for i in self.shells], [i.export() for i in self.stuff], self.languages, [i.export() for i in self.capacities], self.notes]
 
     def isalive(self): return self.stat[9] > 0
 
@@ -61,17 +61,30 @@ class Player:
 
         else: return False
     
+    # 0 : objet non possédé ; 1 : pas assez d'objet ; 2 : succès
     def use_stuff(self, stuff_name, nb):
         def get_index(name):
             for index, item in enumerate(self.stuff):
-                if item.name == stuff.name: return index
+                if item.name == stuff_name: return index
+            return -1
 
         index = get_index(stuff_name)
-        self.stuff[index].nb_use -= nb
-        if self.stuff[index].nb_use < -1: self.del_stuff(stuff_name)
+
+        if index == -1: return 0 # objet non possédé
+        if self.stuff[index].nb_use >= nb:
+            self.stuff[index].nb_use -= nb
+            if self.stuff[index].nb_use == 0: self.del_item(stuff_name, 3)
+            return 2
+
+        return 1
 
     def rest(self):
-        pass
+        # Récupération des points de vie
+        self.stat[9] += self.natural_healing()
+        max_pv = self.max_pv()
+        if self.stat[9] > max_pv: self.stat[9] = max_pv
+
+
 
 
 class Weapon:
@@ -89,6 +102,7 @@ class Armor:
         self.name = name
         self.category = category
         self.description = description
+        # stat = [Réduction de Dégâts (RD), Points d'Armure (PA), agilité maximale]
         self.stat = stat
 
     def export(self): return [self.name, self.category, self.description, self.stat]
@@ -104,7 +118,7 @@ class Shell:
 
 
 class Stuff:
-    def __init__(self, name, description, nb_use=-1):
+    def __init__(self, name, description, nb_use):
         self.name = name
         self.description = description
         self.nb_use = nb_use

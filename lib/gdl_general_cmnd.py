@@ -92,7 +92,7 @@ class GeneralCommands(commands.Cog):
             shell = "< aucun bouclier >"
 
         if player.stuff:
-            stuff = "\n".join([f" ❖ {i.name} {(' (nombre restant : {} ) '.format(i.nb_use), '')[i.nb_use == -1]}" for i in player.stuff])
+            stuff = "\n".join([f" ❖ {i.name} {(' (nombre restant : {} ) '.format(i.nb_use), '')[i.nb_use == 1]}" for i in player.stuff])
         else:
             stuff = "< aucun équipement > "
 
@@ -137,10 +137,9 @@ class GeneralCommands(commands.Cog):
             await ctx.send("*Erreur : commande non-autorisée*")
             return
 
-        with open("save.txt", "w") as file:
-            file.write("[]")
         self.player_data = {}
         print("Sauvegarde formatée")
+        self.__save()
 
 
     @commands.command()
@@ -185,7 +184,7 @@ class GeneralCommands(commands.Cog):
 
         self.__save()
 
-    @commands.command("aide", aliases=("assistance", "doc", "documentation"))
+    @commands.command(name="aide", aliases=("assistance", "doc", "documentation"))
     async def aide(self, ctx):
         fields = [(command, f"{display_syntax(command, self.cmnd_data[command], *self.config[:2])}\n{self.cmnd_data[command][2]}", False) for command in self.cmnd_data]
         embed = make_embed("Graines de Légende — assistance", "Liste de toutes les commandes disponibles.", 8421504, fields)
