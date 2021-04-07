@@ -46,7 +46,7 @@ Dans les grandes lignes, soit vous passez pas un gestionnaire de paquet (brew po
 
 Pip3 est un gestionnaire de paquet pour les modules Python. Il vous permet d'accéder à la base de données Pypi qui concentre une très grande quantité de modules (numpy, scipy, requests, discord…)
 
-De même que pour git, l'installation ne pose pas de problème particulier.
+De même que pour git, l'installation ne pose pas de problème particulier et est bien documentée.
 
 ### Python
 
@@ -68,7 +68,7 @@ Dans un terminal, entrez :
 
 `$ git clone https://github.com/Shadow15510/graines_de_legendes.git`
 
-Cette commande va copier l'intégralité du dépôts à la racine de votre répertoire personnel.
+Cette commande va copier l'intégralité du dépôt à la racine de votre répertoire personnel.
 
 ### Création du bot
 
