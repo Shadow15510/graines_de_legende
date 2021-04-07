@@ -69,6 +69,17 @@
         [3, 3],
         ["+ / -", "pièces d'or", "pièces de cuivre"],
         "Ajoute ou enlève des pièces d'or et de cuivre à vos richesses."
-    ]
+    ],
+
+    "vie": [
+        [1, 1],
+        ["points de vie"],
+        "Ajouter ou enlever des points de vie à son personnage. Entrer un nombre négatif de points de vie vous fait perdre des points de vie."
+    ],
+
+    "repos": [
+        [0, 0],
+        [],
+        "Se reposer."]
 
 }

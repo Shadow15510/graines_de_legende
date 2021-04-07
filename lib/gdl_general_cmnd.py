@@ -292,3 +292,41 @@ class GeneralCommands(commands.Cog):
         export_save(self.player_data)
 
 
+    @commands.command()
+    async def vie(self, ctx, *, args=None):
+        args = analize(args, self.config[1])
+
+        if len(args) != 1:
+            await ctx.send(error("vie", self.cmnd_data, *self.config[:2]))
+            return
+
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        player.stat[9] += args[0]
+        max_pv = player.max_pv()
+
+        await ctx.send(f"{player.name} {('gagne', 'perd')[args[0] < 0]} {abs(args[0])} Point{('', 's')[abs(args[0]) > 1]} de vie.")
+
+        if player.stat[9] < 0:
+            player.stat[9] = 0
+            await ctx.send(f"{player.name} est sur le point de mourir !")
+        elif player.stat[9] > max_pv: player.stat[9] = max_pv
+
+        export_save(self.player_data)
+
+
+    @commands.command(name="repos", aliases=("sieste", "nuit", "dodo"))
+    async def repos(self, ctx):
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        player.rest()
+        await ctx.send(f"{player.name} se repose.")
+
+
+
