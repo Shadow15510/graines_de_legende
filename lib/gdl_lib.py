@@ -19,8 +19,8 @@ def roll(player, spec, level):
 
 
 # roll_dice : simule un lancer de dé
-def roll_dice(nb_dice=1, nb_faces=6):
-    return randint(nb_dice, nb_dice * nb_faces)
+def roll_dice(nb_dice=1):
+    return randint(nb_dice, nb_dice * 6)
 
 
 # get_weapon_bonus : renvoie le bonus de l'arme en fonction de sa catégorie
@@ -33,6 +33,62 @@ def get_weapon_bonus(weapon_category, bonus=0):
 def get_armor_stat(armor_category):
     armor_type = ("pièce d'armure", "armure légère", "armure intermédaire", "armure lourde").index(armor_category.lower())
     return ((1, 6, 3), (2, 16, 2), (4, 40, 1), (6, 72, 0))[armor_type]
+
+
+# capacity_xp_cost : retourne le prix en XP d'une capacité en fonction du type de son archétype et de son rang dans l'archétype
+def capacity_xp_cost(cap_type, cap_rank):
+    calc = lambda n: (n + 1) // 2
+
+    if cap_type == "commun":
+        return 1
+    if cap_type in ("ethnique", "héroïque"):
+        if cap_type == "ethnique" and not cap_rank: return 0
+        return calc(cap_rank)
+    if cap_type == "legendaire":
+        return 2 ** calc(cap_rank)
+
+
+# get_capa_from_type : retourne toutes les capacités d'un archétype d'un type donné
+def get_capa_from_type(capa_data, target, limit):
+    return [capacity for capacity in capa_data if capa_data[capacity][4][2] <= limit + 1 and capa_data[capacity][4][0] == target]
+
+
+# get_capa_from_name : retourne toutes les capacités d'un archétype d'un nom donné
+def get_capa_from_name(capa_data, target, limit):
+    return [capacity for capacity in capa_data if capa_data[capacity][4][2] <= limit + 1 and capa_data[capacity][4][1] == target]
+
+
+# capa_available : retourne la liste des capacités achetables
+def capa_available(player, capa_data):
+    def get(player, capa_data, index, name):
+        if player.archetype[index][0]: return get_capa_from_name(capa_data, player.archetype[index][0], player.archetype[index][1])
+        else: return get_capa_from_type(capa_data, name, 5)
+
+    capacity = [get_capa_from_name(capa_data, player.species.lower(), player.archetype[0][1])] # capacité ethniques
+    capacity.append(get(player, capa_data, 1, "commun")) # capacité communes
+
+    if player.archetype[1][1] >= 3: # le joueur à accès aux catégories suppérieures
+        for i in range(2, 4): # les capacités Héroïques I, II
+            capacity.append(get(player, capa_data, i, "héroïque"))
+
+        if player.archetype[2][1] >= 3 or player.archetype[3][1] >= 3: # Accès à la catégorie héroïque III
+            capacity.append(get(player, capa_data, 4, "héroïque"))
+        else:
+            capacity.append([])
+    else:
+        capacity.append([])
+
+    if player.stat[8][0] > 30:
+        capacity.append(get(player, capa_data, 5, "légendaire"))
+    else:
+        capacity.append([])
+
+    answer = []
+    for i in range(len(capacity)):
+        answer.append([capacity[i][j] for j in range(len(capacity[i])) if player.have_capacity(capacity[i][j]) == (-1, -1)])
+    return answer
+
+
 
 
 
@@ -104,8 +160,8 @@ def load_save():
         with open("gdl_save.txt", "r") as file:
             save = file.read()
         print("# partie chargée")
-
         return {player[0]: Player(*player) for player in eval(save)}
+    
     except:
         print("# aucune partie trouvée\n# création d'une nouvelle partie")
         with open("gdl_save.txt", "w") as file:

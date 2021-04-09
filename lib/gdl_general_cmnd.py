@@ -5,45 +5,102 @@ from lib.gdl_lib import *
 
 
 class GeneralCommands(commands.Cog):
-    def __init__(self, bot, config, player_data, cmnd_data):
+    def __init__(self, bot, config, player_data, cmnd_data, capa_data):
         self.bot = bot
         self.config = config
 
         self.player_data = player_data
         self.cmnd_data = cmnd_data
+        self.capa_data = capa_data
 
     @commands.command()
     async def nouveau(self, ctx, *, args=None):
         args = analize(args, self.config[1])
 
-        if len(args) != self.cmnd_data["nouveau"][0][0]:
+        if len(args) != 2:
             await ctx.send(error("nouveau", self.cmnd_data, *self.config[:2]))
         
         elif ctx.author.id in self.player_data:
             await ctx.send(f"*Erreur : vous êtes déjà enregistré sous le nom de {self.player_data[ctx.author.id].name}.*")
         
         else:
-            spec = ("agilité", "constitution", "force", "précision", "sens", "social", "survie", "volonté")
+            stat = [2 for _ in range(8)] + [[0, 0], 20, [0, 0], randint(0, 16777215)]
+            self.player_data[ctx.author.id] = Player(ctx.author.id, args[0], args[1], stat, str(ctx.author.avatar_url))
 
-            stat_bad = spec.index(args[2].lower()), spec.index(args[3].lower())
-            stat_excellent = spec.index(args[4].lower()), spec.index(args[5].lower())
-            stat_default = ([1, 1], 20, [10, 0], randint(0, 16777215)) # XP, PV, monnaie de cuivre, couleur
-            
-            stat = [2 for i in range(12)]
+            steps = [
+                ("Choisir ses points faibles", f"Choisissez deux caractéristiques dans lesquelles vous serez mauvais.\n`{self.config[0]}carac 1 {self.config[1]} capacité 1 {self.config[1]} capacité 2`", False),
+                ("Choisir ses points fort", f"Selectionnez deux caractéristiques parmis les six restantes\n`{self.config[0]}carac 3 {self.config[1]} capacité 1 {self.config[1]} capacité 2`", False),
+                ("Écrire son histoire", f"`{self.config[0]}histoire contenu`", False),
+                ("Régler son XP de départ", f"Cela va automatiquement régler vos richesses de départ.\n`{self.config[0]}xp montant`", False)]
 
-            for i in range(12):
-                if i in stat_bad: stat[i] = 1
-                elif i in stat_excellent: stat[i] = 3
-                elif i > 7: stat[i] = stat_default[i - 8]
-
-            self.player_data[ctx.author.id] = Player(ctx.author.id, args[0], args[1], stat, ctx.author.avatar_url, args[6])
-
-            player = self.player_data[ctx.author.id]
-            player.stat[9] = player.max_pv()
-
-            await ctx.send(f"{args[0]} enregistré.")
-
+            embed = make_embed("Création d'un nouveau joueur", "Vous avez commencé la création d'un joueur, veuillez suivres les étapes ci-dessous pour finaliser sa création.", 8421504, steps)
+            await ctx.send(embed=embed)
             export_save(self.player_data)
+
+    @commands.command(name="carac", aliases=("caractéristique", "caractéristiques"))
+    async def carac(self, ctx, *, args=None):
+        args = analize(args, self.config[1])
+        if len(args) < 2:
+            await ctx.send(error("carac", self.cmnd_data, *self.config[:2]))
+
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        spec_name = ("agilité", "constitution", "force", "précision", "sens", "social", "survie", "volonté")
+        nb, spec = args[0], [spec_name.index(i.lower()) for i in args[1:]]
+
+        for i in spec:
+            player.stat[i] = nb
+
+        max_pv = player.max_pv()
+        if player.stat[9] > max_pv: player.stat[9] = max_pv
+
+        if len(args[1:]) > 1: await ctx.send(f"Les caractéristiques : {', '.join(args[1:])} sont devenues {('exécrables', 'mauvaises', 'moyennes', 'excellentes', 'mythiques')[nb]}.")
+        else: await ctx.send(f"La caractéristique : {args[1]} est devenue {('exécrable', 'mauvaise', 'moyenne', 'excellente', 'mythique')[nb]}.")
+        export_save(self.player_data)
+
+    @commands.command()
+    async def histoire(self, ctx, *, args=None):
+        args = analize(args, self.config[1])
+        if len(args) != 1:
+            await ctx.send(error("carac", self.cmnd_data, *self.config[:2]))
+
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        player.history = args[0]
+        await ctx.send(f"L'histoire de {player.name} a été mise à jour.")
+
+        export_save(self.player_data)
+
+    @commands.command(name="xp", aliases=("expérience", "XP"))
+    async def xp(self, ctx, *, args=None):
+        args = analize(args, self.config[1])
+        if len(args) != 1:         
+            await ctx.send(error("xp", self.cmnd_data, *self.config[:2]))
+
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        if player.stat[8][0] + player.stat[8][1] != 0:
+            await ctx.send("*Erreur : vous ne pouvez pas changer votre expérience une fois la partie commencée.*")
+            return
+
+        player.stat[9] = player.max_pv()
+        player.stat[8][1] = args[0]
+        player.stat[10][0] = 10 * args[0]
+
+        player.archetype[0][1] = 1
+        player.capacities[1].append([get_capa_from_name(self.capa_data, player.species.lower(), 2)[0], 1])
+
+        await ctx.send(f"L'expérience de {player.name} a été réglée sur {args[0]}\nVotre personnage est terminé !")
+        export_save(self.player_data)
 
 
     @commands.command(name="stat", aliases=("info", "information", "informations", "statistique", "statistiques"))
@@ -99,8 +156,8 @@ class GeneralCommands(commands.Cog):
         spec_level = ("Exécrable", "Mauvais", "Moyen", "Excellent", "Mythique")
         
         fields = [
-            ("Agilité", spec_level[player.stat[0]], True),      ("Sens", spec_level[player.stat[4]], True),       ("Expérience totale", f"{player.stat[8][0]} XP", True),
-            ("Constitution", spec_level[player.stat[1]], True), ("Social", spec_level[player.stat[5]], True),     ("Langues", "\n".join([f" ❖ {i}" for i in player.languages]), True),
+            ("Agilité", spec_level[player.stat[0]], True),      ("Sens", spec_level[player.stat[4]], True),       ("XP dépensés", f"{player.stat[8][0]} XP", True),
+            ("Constitution", spec_level[player.stat[1]], True), ("Social", spec_level[player.stat[5]], True),     (". . .", ". . .", True),
             ("Force", spec_level[player.stat[2]], True),        ("Survie", spec_level[player.stat[6]], True),     (". . .", ". . .", True),
             ("Précision", spec_level[player.stat[3]], True),    ("Volonté", spec_level[player.stat[7]], True),    (". . .", ". . .", True),
             
@@ -108,7 +165,7 @@ class GeneralCommands(commands.Cog):
             
             ("Points de vie", f"{player.stat[9]} / {player.max_pv()} PV", True), ("Guérison naturelle", f"+{player.natural_healing()} PV", True), ("Blessures graves", injuries, True),
             ("Armes", weapons, True), ("Armures", armor, True), ("Boucliers", shell, True),
-            ("Richesse", f"{gold} Pièce{('', 's')[gold > 1]} d'or\n{copper} Pièce{('', 's')[copper > 1]} de cuivre", True), ("Équipement", stuff, True),
+            ("Langues", "\n".join([f" ❖ {i}" for i in player.languages]), True), ("Richesse", f"{gold} Pièce{('', 's')[gold > 1]} d'or\n{copper} Pièce{('', 's')[copper > 1]} de cuivre", True), ("Équipement", stuff, True),
             ("Notes", notes, False)]
 
         embed = make_embed(f"{player.name}\n", player.history, player.stat[11], fields, player.image)
@@ -319,14 +376,49 @@ class GeneralCommands(commands.Cog):
 
 
     @commands.command(name="repos", aliases=("sieste", "nuit", "dodo"))
-    async def repos(self, ctx):
+    async def repos(self, ctx, *, args=None):
+        args = analize(args)
+
+        if len(args) != 1:
+            await ctx.send(error("repos", self.cmnd_data, *self.config[:2]))
+            return
+
         player = get_player_from_id(self.player_data, ctx.author.id)
         if not player:
             await ctx.send("*Erreur : vous n'est pas un joueur.*")
             return
 
-        player.rest()
-        await ctx.send(f"{player.name} se repose.")
+        if args[0] == "long":
+            player.rest()
+            await ctx.send(f"{player.name} dort profondément.")
+
+        elif args[0] == "court":
+            player.night()
+            await ctx.send(f"{player.name} fait une sieste.")
+
+        else:
+            await ctx.send(error("repos", self.cmnd_data, *self.config[:2]))
+
+
+    @commands.command(name="lancer", aliases=("dé", "dés", "lancé"))
+    async def lancer(self, ctx, *, args=None):
+        args = analize(args, self.config[1])
+
+        if len(args) > 1:
+            await ctx.send(error("lancer", self.cmnd_data, *self.config[:2]))
+            return
+
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        if not args: nb = 1
+        elif len(args) == 1: nb = args[0]
+
+        if nb < 1: nb = 1
+        await ctx.send(f"{player.name} lance {nb}d6. Résultat : {roll_dice(nb)} / {nb * 6}")
+            
 
 
 

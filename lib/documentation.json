@@ -1,8 +1,26 @@
 {
     "nouveau": [
-        [7, 7],
-        ["nom", "éthnie", "mauvais 1", "mauvais 2", "exellent 1", "exellent 2", "histoire"],
-        "Créer un nouveau joueur. Les quatres derniers arguments correspondent aux noms des caractériques mauvaises et exellentes, les autres sont automatiquement réglées sur moyen."
+        [2, 2],
+        ["nom", "éthnie"],
+        "Créer un nouveau joueur."
+    ],
+
+    "carac": [
+        [2, 2],
+        ["index du niveau", "nom de la capacité"],
+        "Permet de changer une ou plusieurs caractéristiques."
+    ],
+
+    "histoire": [
+        [1, 1],
+        ["contenu"],
+        "Change l'histoire du joueur."
+    ],
+
+    "xp": [
+        [1, 1],
+        ["nombre"],
+        "Règle l'expérience du joueur sur le nombre donné en argument. Cette commande n'est plus valable une fois le personnage terminé."
     ],
 
     "stat": [
@@ -78,8 +96,21 @@
     ],
 
     "repos": [
-        [0, 0],
-        [],
-        "Se reposer."]
+        [1, 1],
+        ["court / long"],
+        "Faire une sieste ou dormir profondément."
+    ],
+
+    "lancer": [
+        [0, 1],
+        ["nombre de dés"],
+        "Simule un lancer de dé."
+    ],
+
+    "capacité": [
+        [0, 1],
+        ["nom de la capacité"],
+        "Affiche les capacité du joueur ou les détails de la capacités donnée en argument."
+    ]
 
 }

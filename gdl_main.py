@@ -4,6 +4,7 @@ from discord.ext import commands
 
 from lib.gdl_general_cmnd import GeneralCommands
 from lib.gdl_stuff_cmnd import StuffCommands
+from lib.gdl_capacity_cmnd import CapacityCommands
 from lib.gdl_lib import load_save
 
 
@@ -13,13 +14,16 @@ with open("config.json", "r") as file:
 with open("lib/documentation.json", "r") as file:
     doc = json.load(file)
 
+with open("lib/capacity.json", "r") as file:
+    cap_doc = json.load(file)
+
 
 bot = commands.Bot(command_prefix=config["PREFIX"])
 
 save = load_save()
 
-for command_class in (GeneralCommands, StuffCommands):
-    bot.add_cog(command_class(bot, (config["PREFIX"], config["SEPARATOR"], config["ADMIN"]), save, doc))
+for command_class in (GeneralCommands, StuffCommands, CapacityCommands):
+    bot.add_cog(command_class(bot, (config["PREFIX"], config["SEPARATOR"], config["ADMIN"]), save, doc, cap_doc))
 
 
 @bot.event

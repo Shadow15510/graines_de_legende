@@ -4,12 +4,13 @@ from discord.ext import commands
 from lib.gdl_lib import *
 
 class StuffCommands(commands.Cog):
-    def __init__(self, bot, config, player_data, cmnd_data):
+    def __init__(self, bot, config, player_data, cmnd_data, capa_data):
         self.bot = bot
         self.config = config
 
         self.player_data = player_data
         self.cmnd_data = cmnd_data
+        self.capa_data = capa_data
 
     @commands.command()
     async def arme(self, ctx, *, args=None):

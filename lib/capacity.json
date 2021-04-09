@@ -1,9 +1,71 @@
 {
-    "attaque de base": [1, 0, "attaque",
-                    "Vous attaquez avec une de vos armes",
-                    "Infligez 1d6 dégâts + bonus de l'arme."],
+    "attaque de base": [
+        "à volonté", "principale (attaque)",
+        "Vous attaquez avec une de vos armes",
+        "Infligez 1d6 dégâts + bonus de l'arme",
+        ["capacité de base", "universel", 0]
+    ],
 
-    "lever son bouclier": [1, 0, "",
-                    "Si vous portez un bouclier, vous le brandissez en face de vous pour encaisser les coups",
-                    "Jusqu'à votre prochain tour, si vous devez subir des dégâts au corps-à-corps ou d'un projectile face à vous, réduisez les points de bouclier à la place de vos points de vie."]
+    "lever de bouclier": [
+        "à volonté", "principale",
+        "Si vous portez un bouclier, vous le brandissez en face de vous pour encaisser les coups.",
+        "Jusqu'à votre prochain tour, si vous devez subir des dégâts d'une attaque au corps-à-corps ou d'un projectile face à vous, réduisez les points de bouclier à la place de vos points de vie.",
+        ["capacité de base", "universel", 0]
+    ],
+
+    "armure de mage": [
+        "rencontre", "principale (sort)",
+        "Une armure de force totalement invisible entoure une créature que vous touchez.",
+        "L'armure de force confère RD 3, 18 PA et agilité maximale : mythique. Si une créature possède déjà une armure physique, l'armure du mage remplace cette armure tant que l'armure du mage a encore des PA.",
+        ["héroïque", "abjurateur", 1]
+    ],
+
+    "dissimulation": [
+        "rencontre", "principale (sort)",
+        "La divination n'a plus d'effet pendant 10 minutes sur une créature que vous avez touché.",
+        "Les sorts qui permettent de détecter la magie, le mal ou qui localise ou scrute une créature dissimulée n'ont plus aucun effet.",
+        ["héroïque", "abjurateur", 2]
+    ],
+
+    "contresort": [
+        "rencontre", "principale (sort)",
+        "Vos connaissances de la défence magique vous permettent de contrer les magies offensives et les afflictions",
+        "Vous interrompez un sort en pleine incantation ou vous dissipez un sort qui affecte une créature.",
+        ["héroïque", "abjurateur", 3]
+    ],
+
+    "glyphe de protection": [
+        "rencontre", "principale (sort)",
+        "Vous déposez un glyphe défensif sur une surface solide comme une porte, un mur, dans un livre",
+        "Lorsqu'une créature observe attentivement le glyphe, celui-ci explose et inflige 6d6 dégâts dans un rayon de 3 mètres.",
+        ["héroïque", "abjurateur", 4]
+    ],
+
+    "zone d'anti-magie": [
+        "quotidien", "10 minutes (sort)",
+        "Vous faites apparaître un dôme, invisible et intangible de 10 mètres de rayon autour de vous.",
+        "La magie n'a plus aucun effet à l'intérieur du dôme. Même les objets magiques perdent leurs propriétés. Le dôme disparaît lorsque vous vous endormez.",
+        ["héroïque", "abjurateur", 5]
+    ],
+
+
+
+
+
+    "vision dans le noir": [
+        "passif", "",
+        "Vous êtes capable de voir dans le noir le plus profond comme si vous êtiez en plein jour.",
+        "Vous pouvez voir dans le noir.",
+        ["ethnique", "elfe", 1]
+    ],
+
+    "réflexe de survie": [
+        "quotidien", "réaction",
+        "Vous avez pressenti un danger et vous avez pu anticiper.",
+        "Réduisez la difficulté d'un test d'Agilité pour éviter un danger.",
+        ["ethnique", "elfe", 2]
+    ]
+
+
+
 }

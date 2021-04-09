@@ -1,35 +1,42 @@
 class Player:
-    def __init__(self, identificator, name, species, stat, image, history, injuries=[], weapons=[["mains nues", "Arme naturelle", "un poing serré peut faire des dégâts.", -3]], armors=[], shells=[], stuff=[], languages=[], capacities=[], notes=[]):
+    def __init__(self, identificator, name, species, stat, image, history="", injuries=[], weapons=[["mains nues", "Arme naturelle", "un poing serré peut faire des dégâts.", -3]], armors=[], shells=[], stuff=[], languages=[], capacities=[], archetype=[], notes=[]):
         self.id = identificator
         self.name = name
         self.species = species
         self.history = history
-        # stat : [Agilité - 0, Constitution - 1, Force - 2, Précision - 3,  Sens - 4, Social - 5, Survie - 6, Volonté - 7, (XP total, XP économisé) - 8, PV - 9, monnaie de (or, cuivre) - 10, couleur - 11]
+        # stat : [Agilité - 0, Constitution - 1, Force - 2, Précision - 3,  Sens - 4, Social - 5, Survie - 6, Volonté - 7, (XP dépensés, XP économisé) - 8, PV - 9, monnaie de (or, cuivre) - 10, couleur - 11]
         self.stat = stat[:]
-
-        if image: self.image = str(image)
-        else: self.image = None
+        self.image = image
 
         if languages: self.languages = languages[:]
         else: self.languages = ["Commun"]
+
+        if archetype: self.archetype = archetype[:]
+        else: self.archetype = [
+            [species, 0], # éthnie
+            ["", 0], # commun
+            ["", 0], # héroïque I
+            ["", 0], # héroïque II
+            ["", 0], # héroïque III
+            ["", 0]] # légendaire
+
+        if capacities: self.capacities = capacities[:]
+        else: self.capacities = [[["attaque de base", 1], ["lever de bouclier", 1]], [], [], [], [], [], []]
 
         self.armors = [Armor(*i) for i in armors]
         self.shells = [Shell(*i) for i in shells]
         self.injuries = [Injury(i) for i in injuries]
         self.weapons = [Weapon(*i) for i in weapons]
         self.stuff = [Stuff(*i) for i in stuff]
-        self.capacities = [Capacity(*i) for i in capacities]
         self.notes = notes[:]
 
-    def export(self): return [self.id, self.name, self.species, self.stat, self.image, self.history, [i.export() for i in self.injuries], [i.export() for i in self.weapons], [i.export() for i in self.armors], [i.export() for i in self.shells], [i.export() for i in self.stuff], self.languages, [i.export() for i in self.capacities], self.notes]
+    def export(self): return [self.id, self.name, self.species, self.stat, self.image, self.history, [i.export() for i in self.injuries], [i.export() for i in self.weapons], [i.export() for i in self.armors], [i.export() for i in self.shells], [i.export() for i in self.stuff], self.languages, self.capacities, self.archetype, self.notes]
 
     def isalive(self): return self.stat[9] > 0
 
     def natural_healing(self): return (2, 4, 5, 8, 15)[self.stat[1]]
 
     def max_pv(self): return (10, 16, 20, 24, 30)[self.stat[1]]
-
-    def get_money(self): return self.stat[10] # renvoie (or, cuivre)
 
     def get_minimum(self, name): return 6 - self.stat[("agilité", "constitution", "force", "précision", "sens", "social", "survie", "volonté").index(name.lower())] # score au dé minimum à obtenir pour valider le lancer
 
@@ -90,11 +97,30 @@ class Player:
 
         return 1
 
-    def rest(self):
+    def have_capacity(self, cap_name):
+        for index_1, archetype in enumerate(self.capacities):
+            for index_2, capacity in enumerate(archetype):
+                if capacity[0] == cap_name: return index_1, index_2 # la capacité est stockée dans : Player.capacities[index_1][index_2], de la forme (nom, utilisable ?)
+        return -1, -1
+
+    def rest(self, capa_data):
+        for archetype in self.capacities:
+            for capacity in archetype:
+                if capa_data[capacity[0]][0] == "rencontre": capacity[1] = 1
+        pass
+
+
+    def night(self):
         # Récupération des points de vie
         self.stat[9] += self.natural_healing()
         max_pv = self.max_pv()
         if self.stat[9] > max_pv: self.stat[9] = max_pv
+
+        for archetype in self.capacities:
+            for capacity in archetype:
+                capacity[1] = 1
+        # recharger toute les capacités (rencontre et quotidienne)
+
 
 
 
@@ -145,12 +171,3 @@ class Injury:
     def export(self): return self.description
 
 
-class Capacity:
-    def __init__(self, name, identificator, ok_to_use):
-        self.name = name
-        self.id = identificator
-        self.ok_to_use = ok_to_use
-
-    def export(self): return [self.name, self.id, self.ok_to_use]
-
-    def isusable(self): return self.ok_to_use
