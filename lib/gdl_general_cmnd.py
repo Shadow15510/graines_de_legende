@@ -24,12 +24,12 @@ class GeneralCommands(commands.Cog):
             await ctx.send(f"*Erreur : vous êtes déjà enregistré sous le nom de {self.player_data[ctx.author.id].name}.*")
         
         else:
-            stat = [2 for _ in range(8)] + [[0, 0], 20, [0, 0], randint(0, 16777215)]
+            stat = [2 for _ in range(8)] + [[0, 0], 20, [0, 0], randint(0, 16777215), 20, 0]
             self.player_data[ctx.author.id] = Player(ctx.author.id, args[0], args[1], stat, str(ctx.author.avatar_url))
 
             steps = [
-                ("Choisir ses points faibles", f"Choisissez deux caractéristiques dans lesquelles vous serez mauvais.\n`{self.config[0]}carac 1 {self.config[1]} capacité 1 {self.config[1]} capacité 2`", False),
-                ("Choisir ses points fort", f"Selectionnez deux caractéristiques parmis les six restantes\n`{self.config[0]}carac 3 {self.config[1]} capacité 1 {self.config[1]} capacité 2`", False),
+                ("Choisir ses points faibles", f"Choisissez deux caractéristiques dans lesquelles vous serez mauvais.\n`{self.config[0]}carac mauvais {self.config[1]} capacité 1 {self.config[1]} capacité 2`", False),
+                ("Choisir ses points fort", f"Selectionnez deux caractéristiques parmis les six restantes\n`{self.config[0]}carac excellent {self.config[1]} capacité 1 {self.config[1]} capacité 2`", False),
                 ("Écrire son histoire", f"`{self.config[0]}histoire contenu`", False),
                 ("Régler son XP de départ", f"Cela va automatiquement régler vos richesses de départ.\n`{self.config[0]}xp montant`", False)]
 
@@ -49,16 +49,17 @@ class GeneralCommands(commands.Cog):
             return
 
         spec_name = ("agilité", "constitution", "force", "précision", "sens", "social", "survie", "volonté")
-        nb, spec = ('exécrable', 'mauvaise', 'moyenne', 'excellente', 'mythique').index(args[0].lower()), [spec_name.index(i.lower()) for i in args[1:]]
+        nb, spec = ('exécrable', 'mauvais', 'moyen', 'excellent', 'mythique').index(args[0].lower()), [spec_name.index(i.lower()) for i in args[1:]]
 
         for i in spec:
             player.stat[i] = nb
 
-        max_pv = player.max_pv()
-        if player.stat[9] > max_pv: player.stat[9] = max_pv
+        player.stat[12] = (10, 16, 20, 24, 30)[player.stat[1]]
+        player.stat[13] = ( 2,  4,  5,  8, 15)[player.stat[1]]
+        if player.stat[9] > player.stat[12]: player.stat[9] = player.stat[12]
 
-        if len(args[1:]) > 1: await ctx.send(f"Les caractéristiques : {', '.join(args[1:])} sont devenues {args[0]}.")
-        else: await ctx.send(f"La caractéristique : {args[1]} est devenue {args[0]}.")
+        if len(args[1:]) > 1: await ctx.send(f"Les caractéristiques : {', '.join(args[1:])} sont devenues {('exécrables', 'mauvaises', 'moyennes', 'excellentes', 'mythiques')[nb]}.")
+        else: await ctx.send(f"La caractéristique : {args[1]} est devenue {('exécrable', 'mauvaise', 'moyenne', 'excellente', 'mythique')[nb]}.")
         export_save(self.player_data)
 
     @commands.command()
@@ -92,11 +93,9 @@ class GeneralCommands(commands.Cog):
             await ctx.send("*Erreur : vous ne pouvez pas changer votre expérience une fois la partie commencée.*")
             return
 
-        player.stat[9] = player.max_pv()
+        player.stat[9] = player.stat[12]
         player.stat[8][1] = args[0]
         player.stat[10][0] = 10 * args[0]
-        player.stat[12] = (10, 16, 20, 24, 30)[self.stat[1]]
-        player.stat[13](2, 4, 5, 8, 15)[self.stat[1]]
 
         player.archetype[0][1] = 1
         player.capacities[1].append([get_capa_from_name(self.capa_data, player.species.lower(), 2)[0], 1])
@@ -297,7 +296,7 @@ class GeneralCommands(commands.Cog):
                 player.languages.remove(args[1])
                 await ctx.send(f"{player.name} oublie une langue : '{args[1]}'.")
             else:
-                await ctx.send(f"*Erreur : {player^.name} ne connaît pas la langue : '{args[1]}'.*")
+                await ctx.send(f"*Erreur : {player.name} ne connaît pas la langue : '{args[1]}'.*")
 
         export_save(self.player_data)
 
@@ -434,7 +433,7 @@ class GeneralCommands(commands.Cog):
         player.stat[12] = args[0]
         await ctx.send(f"La vie maximale de {player.name} est désormais de {args[0]} PV.")
 
-        @commands.command(name="guérison")
+    @commands.command(name="guérison")
     async def guerison(self, ctx, *, args=None):
         args = analize(args, self.config[1])
 
