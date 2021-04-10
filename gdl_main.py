@@ -21,6 +21,8 @@ with open("lib/capacity.json", "r") as file:
 bot = commands.Bot(command_prefix=config["PREFIX"])
 
 save = load_save()
+for player_id in save:
+    save[player_id].stat[8][1] += config["XP"]
 
 for command_class in (GeneralCommands, StuffCommands, CapacityCommands):
     bot.add_cog(command_class(bot, (config["PREFIX"], config["SEPARATOR"], config["ADMIN"]), save, doc, cap_doc))

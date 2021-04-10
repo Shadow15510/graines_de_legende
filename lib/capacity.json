@@ -64,8 +64,34 @@
         "Vous avez pressenti un danger et vous avez pu anticiper.",
         "Réduisez la difficulté d'un test d'Agilité pour éviter un danger.",
         ["ethnique", "elfe", 2]
+    ],
+
+    "test_1": [
+        "rencontre", "reaction",
+        "OSEF",
+        "idem",
+        ["commun", "marchand", 1]
+    ],
+
+    "test_2": [
+        "à volonté", "reaction",
+        "OSEF",
+        "idem",
+        ["commun", "marchand", 2]
+    ],
+
+    "test_3": [
+        "à volonté", "reaction",
+        "OSEF",
+        "idem",
+        ["commun", "autre", 1]
+    ],
+
+    "test_4": [
+        "à volonté", "reaction",
+        "OSEF",
+        "idem",
+        ["commun", "autre", 2]
     ]
-
-
 
 }

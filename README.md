@@ -2,10 +2,6 @@
 
 ## Présentation
 
-### Principe
-
-Graines de Légendes est un système de jeu de rôle basé sur des capacités que le joueur peut acheter avec son expérience.
-
 ### Bot Discord
 
 De manière à faciliter les jeux de rôles par écrans interposés avec ce système. Le concept a été porté en Python en un bot Discord.
@@ -89,6 +85,7 @@ Dans votre répertoire personnel, allez dans le dossier `graines_de_legendes` et
         "TOKEN": < le token copié à l'étape précédente >,
         "PREFIX": "§",
         "SEPARATOR": ";",
+        "XP": 1,
         "ADMIN": []
     }
 ```
@@ -98,6 +95,8 @@ Dans votre répertoire personnel, allez dans le dossier `graines_de_legendes` et
 Le préfix vous permettra d'appeller le bot lorsque vous jouerez, prenez un charactère simple, de préférence unique, évitez les charactères déjà pris (*, /, _, …).
 
 Le sépérateur va séparer les arguments des commandes transmises au bot, de même vous pouvez mettre un caractère de votre choix. Évitez les virgules qui ne sont pas pratiques et les espaces qui produiront des erreurs.
+
+L'XP est le nombre de points d'expérience que les joueur vont gagner par scéance de jeu. Par défaut chaque joueur reçoit donc 1 point d'expérience par scéance.
 
 La liste ADMIN est la liste des idenfiants des maîtres du jeux qui auront ainsi accès à quelques commandes supplémentaires (surtout pour modérer les joueurs). Pour connaître l'idenfiant d'une personne, activez le mode développeur de Discord et faîtes clique droit sur la personne, dernière ligne 'copier l'identifiant'. Il s'agit bien d'un chiffre et non d'une chaîne de caractères.
 

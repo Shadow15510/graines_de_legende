@@ -4,7 +4,7 @@ class Player:
         self.name = name
         self.species = species
         self.history = history
-        # stat : [Agilité - 0, Constitution - 1, Force - 2, Précision - 3,  Sens - 4, Social - 5, Survie - 6, Volonté - 7, (XP dépensés, XP économisé) - 8, PV - 9, monnaie de (or, cuivre) - 10, couleur - 11]
+        # stat : [Agilité - 0, Constitution - 1, Force - 2, Précision - 3,  Sens - 4, Social - 5, Survie - 6, Volonté - 7, (XP dépensés, XP économisé) - 8, PV - 9, monnaie de (or, cuivre) - 10, couleur - 11; max_pv - 12, guérison naturelle - 13]
         self.stat = stat[:]
         self.image = image
 
@@ -33,10 +33,6 @@ class Player:
     def export(self): return [self.id, self.name, self.species, self.stat, self.image, self.history, [i.export() for i in self.injuries], [i.export() for i in self.weapons], [i.export() for i in self.armors], [i.export() for i in self.shells], [i.export() for i in self.stuff], self.languages, self.capacities, self.archetype, self.notes]
 
     def isalive(self): return self.stat[9] > 0
-
-    def natural_healing(self): return (2, 4, 5, 8, 15)[self.stat[1]]
-
-    def max_pv(self): return (10, 16, 20, 24, 30)[self.stat[1]]
 
     def get_minimum(self, name): return 6 - self.stat[("agilité", "constitution", "force", "précision", "sens", "social", "survie", "volonté").index(name.lower())] # score au dé minimum à obtenir pour valider le lancer
 
@@ -112,9 +108,8 @@ class Player:
 
     def night(self):
         # Récupération des points de vie
-        self.stat[9] += self.natural_healing()
-        max_pv = self.max_pv()
-        if self.stat[9] > max_pv: self.stat[9] = max_pv
+        self.stat[9] += self.stat[13]
+        if self.stat[9] > self.stat[12]: self.stat[9] = self.stat[12]
 
         for archetype in self.capacities:
             for capacity in archetype:

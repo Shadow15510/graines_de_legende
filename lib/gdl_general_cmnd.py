@@ -49,7 +49,7 @@ class GeneralCommands(commands.Cog):
             return
 
         spec_name = ("agilité", "constitution", "force", "précision", "sens", "social", "survie", "volonté")
-        nb, spec = args[0], [spec_name.index(i.lower()) for i in args[1:]]
+        nb, spec = ('exécrable', 'mauvaise', 'moyenne', 'excellente', 'mythique').index(args[0].lower()), [spec_name.index(i.lower()) for i in args[1:]]
 
         for i in spec:
             player.stat[i] = nb
@@ -57,8 +57,8 @@ class GeneralCommands(commands.Cog):
         max_pv = player.max_pv()
         if player.stat[9] > max_pv: player.stat[9] = max_pv
 
-        if len(args[1:]) > 1: await ctx.send(f"Les caractéristiques : {', '.join(args[1:])} sont devenues {('exécrables', 'mauvaises', 'moyennes', 'excellentes', 'mythiques')[nb]}.")
-        else: await ctx.send(f"La caractéristique : {args[1]} est devenue {('exécrable', 'mauvaise', 'moyenne', 'excellente', 'mythique')[nb]}.")
+        if len(args[1:]) > 1: await ctx.send(f"Les caractéristiques : {', '.join(args[1:])} sont devenues {args[0]}.")
+        else: await ctx.send(f"La caractéristique : {args[1]} est devenue {args[0]}.")
         export_save(self.player_data)
 
     @commands.command()
@@ -95,6 +95,8 @@ class GeneralCommands(commands.Cog):
         player.stat[9] = player.max_pv()
         player.stat[8][1] = args[0]
         player.stat[10][0] = 10 * args[0]
+        player.stat[12] = (10, 16, 20, 24, 30)[self.stat[1]]
+        player.stat[13](2, 4, 5, 8, 15)[self.stat[1]]
 
         player.archetype[0][1] = 1
         player.capacities[1].append([get_capa_from_name(self.capa_data, player.species.lower(), 2)[0], 1])
@@ -163,7 +165,7 @@ class GeneralCommands(commands.Cog):
             
             (". . .", f". . .", True),                           (". . .", ". . .", True),                         (". . .", ". . .", True),
             
-            ("Points de vie", f"{player.stat[9]} / {player.max_pv()} PV", True), ("Guérison naturelle", f"+{player.natural_healing()} PV", True), ("Blessures graves", injuries, True),
+            ("Points de vie", f"{player.stat[9]} / {player.stat[12]} PV", True), ("Guérison naturelle", f"+{player.stat[13]} PV", True), ("Blessures graves", injuries, True),
             ("Armes", weapons, True), ("Armures", armor, True), ("Boucliers", shell, True),
             ("Langues", "\n".join([f" ❖ {i}" for i in player.languages]), True), ("Richesse", f"{gold} Pièce{('', 's')[gold > 1]} d'or\n{copper} Pièce{('', 's')[copper > 1]} de cuivre", True), ("Équipement", stuff, True),
             ("Notes", notes, False)]
@@ -225,15 +227,12 @@ class GeneralCommands(commands.Cog):
         if not (self.cmnd_data["blessure"][0][0] <= len(args) <= self.cmnd_data["blessure"][0][1]):
             await ctx.send(error("blessure", self.cmnd_data, *self.config[:2]))
             return
-        elif len(args) == 1: target = ctx.author.id
-        else:
-            if ctx.author.id in self.config[2]:
-                target = get_id_from_nick(self.player_data, args[1])
-            else:
-                await ctx.send("*Erreur : commande non-autorisée.*")
-                return
 
-        player = self.player_data[target]
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
         player.injuries.append(Injury(args[0]))
         await ctx.send(f"{player.name} est blessé.e ! {args[0]}")
 
@@ -298,7 +297,7 @@ class GeneralCommands(commands.Cog):
                 player.languages.remove(args[1])
                 await ctx.send(f"{player.name} oublie une langue : '{args[1]}'.")
             else:
-                await ctx.send(f"*Erreur : {player.name} ne connaît pas la langue : '{args[1]}'.*")
+                await ctx.send(f"*Erreur : {player^.name} ne connaît pas la langue : '{args[1]}'.*")
 
         export_save(self.player_data)
 
@@ -377,7 +376,7 @@ class GeneralCommands(commands.Cog):
 
     @commands.command(name="repos", aliases=("sieste", "nuit", "dodo"))
     async def repos(self, ctx, *, args=None):
-        args = analize(args)
+        args = analize(args, self.config[1])
 
         if len(args) != 1:
             await ctx.send(error("repos", self.cmnd_data, *self.config[:2]))
@@ -389,11 +388,11 @@ class GeneralCommands(commands.Cog):
             return
 
         if args[0] == "long":
-            player.rest()
+            player.night()
             await ctx.send(f"{player.name} dort profondément.")
 
         elif args[0] == "court":
-            player.night()
+            player.rest(self.capa_data)
             await ctx.send(f"{player.name} fait une sieste.")
 
         else:
@@ -418,6 +417,40 @@ class GeneralCommands(commands.Cog):
 
         if nb < 1: nb = 1
         await ctx.send(f"{player.name} lance {nb}d6. Résultat : {roll_dice(nb)} / {nb * 6}")
+
+    @commands.command()
+    async def max_pv(self, ctx, *, args=None):
+        args = analize(args, self.config[1])
+
+        if len(args) != 1:
+            await ctx.send(error("max_pv", self.cmnd_data, *self.config[:2]))
+            return
+
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        player.stat[12] = args[0]
+        await ctx.send(f"La vie maximale de {player.name} est désormais de {args[0]} PV.")
+
+        @commands.command(name="guérison")
+    async def guerison(self, ctx, *, args=None):
+        args = analize(args, self.config[1])
+
+        if len(args) != 1:
+            await ctx.send(error("guérison", self.cmnd_data, *self.config[:2]))
+            return
+
+        player = get_player_from_id(self.player_data, ctx.author.id)
+        if not player:
+            await ctx.send("*Erreur : vous n'est pas un joueur.*")
+            return
+
+        player.stat[13] = args[0]
+        await ctx.send(f"La guérison naturelle de {player.name} est désormais de {args[0]} PV.")
+
+
             
 
 

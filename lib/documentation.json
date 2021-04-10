@@ -7,7 +7,7 @@
 
     "carac": [
         [2, 2],
-        ["index du niveau", "nom de la capacité"],
+        ["nom du niveau", "nom de la capacité"],
         "Permet de changer une ou plusieurs caractéristiques."
     ],
 
@@ -107,10 +107,34 @@
         "Simule un lancer de dé."
     ],
 
+    "max_pv": [
+        [1, 1],
+        ["nombre de PV"],
+        "Règle le nombre maximum de points de vie du joueur."
+    ],
+
+    "guérison": [
+        [1, 1],
+        ["nombre de PV"],
+        "Règle la guérison naturelle du joueur."
+    ],
+
     "capacité": [
         [0, 1],
         ["nom de la capacité"],
         "Affiche les capacité du joueur ou les détails de la capacités donnée en argument."
+    ],
+
+    "utilise": [
+        [1, 1],
+        ["nom de la capacité"],
+        "Utiliser une de ses capacités."
+    ],
+
+    "achat": [
+        [0, 1],
+        ["nom de la capacité"],
+        "Sans argument, cette commande vous renvoie la liste des capacités que vous pouvez acheter.\nPrécisez une capacité pour l'acheter."
     ]
 
 }

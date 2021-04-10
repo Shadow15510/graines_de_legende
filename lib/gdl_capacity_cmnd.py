@@ -33,7 +33,7 @@ class CapacityCommands(commands.Cog):
             values = []
             for index, i in enumerate(player.archetype):
                 if i[1]:
-                    values.append(f"{i[0]}\n" + "\n".join([f" ❖ {j[0]} {('❌', '')[j[1]]}" for j in player.capacities[index + 1]]))
+                    values.append(f"__{i[0].capitalize()}__\n" + "\n".join([f" {('❌', '❖')[j[1]]} {j[0]}" for j in player.capacities[index + 1]]))
                 else:
                     values.append("< aucune capacité >")
 
@@ -69,7 +69,7 @@ class CapacityCommands(commands.Cog):
 
     @commands.command()
     async def utilise(self, ctx, *, args=None):
-        args = analize(args, self.confg[1])
+        args = analize(args, self.config[1])
         if len(args) != 1:
             await ctx.send(error("utilise", self.cmnd_data, *self.config[:2]))
             return
@@ -87,9 +87,11 @@ class CapacityCommands(commands.Cog):
             await ctx.send("*Erreur : vous devez vous reposez pour utiliser à nouveau cette capacité.*")
         
         else:
-            await ctx.send(f"Vous utilisez la capacité : '{args[0]}'")
+            await ctx.send(f"Vous utilisez la capacité : '{args[0]}'\n{self.capa_data[args[0]][3]}")
             if self.capa_data[args[0]][0] in ("rencontre", "quotidien"):
                 player.capacities[archetype][capacity][1] = 0
+
+        export_save(self.player_data)
 
     @commands.command()
     async def achat(self, ctx, *, args=None):
@@ -118,9 +120,28 @@ class CapacityCommands(commands.Cog):
             await ctx.send(embed=embed)
 
         else:
-            if not args[0] in available:
+            args[0] = args[0].lower()
+            if not True in [args[0] in i for i in available]:
                 await ctx.send(f"*Erreur : vous ne pouvez pas acheter la capacité : '{args[0]}'.*")
-                return 
+                return
+
+            cost = capacity_xp_cost(self.capa_data[args[0]][4][0], self.capa_data[args[0]][4][2])
+            if player.stat[8][1] >= cost:
+                index = ("ethnique", "commun", "héroïque", "légendaire").index(self.capa_data[args[0]][4][0])
+                
+                player.capacities[index + 1].append([args[0], 1])
+                player.archetype[index][0] = self.capa_data[args[0]][4][1]
+                player.archetype[index][1] += 1
+                
+                player.stat[8][1] -= cost
+                player.stat[8][0] += cost
+                await ctx.send(f"{player.name} achète la capacité : '{args[0]}' pour {cost} XP.")
+            else:
+                await ctx.send("*Erreur : vous n'avez pas assez d'expérience.")
+
+            export_save(self.player_data)
+
+
 
 
 
