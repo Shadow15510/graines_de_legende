@@ -46,52 +46,6 @@
         "Vous faites apparaître un dôme, invisible et intangible de 10 mètres de rayon autour de vous.",
         "La magie n'a plus aucun effet à l'intérieur du dôme. Même les objets magiques perdent leurs propriétés. Le dôme disparaît lorsque vous vous endormez.",
         ["héroïque", "abjurateur", 5]
-    ],
-
-
-
-
-
-    "vision dans le noir": [
-        "passif", "",
-        "Vous êtes capable de voir dans le noir le plus profond comme si vous êtiez en plein jour.",
-        "Vous pouvez voir dans le noir.",
-        ["ethnique", "elfe", 1]
-    ],
-
-    "réflexe de survie": [
-        "quotidien", "réaction",
-        "Vous avez pressenti un danger et vous avez pu anticiper.",
-        "Réduisez la difficulté d'un test d'Agilité pour éviter un danger.",
-        ["ethnique", "elfe", 2]
-    ],
-
-    "test_1": [
-        "rencontre", "reaction",
-        "OSEF",
-        "idem",
-        ["commun", "marchand", 1]
-    ],
-
-    "test_2": [
-        "à volonté", "reaction",
-        "OSEF",
-        "idem",
-        ["commun", "marchand", 2]
-    ],
-
-    "test_3": [
-        "à volonté", "reaction",
-        "OSEF",
-        "idem",
-        ["commun", "autre", 1]
-    ],
-
-    "test_4": [
-        "à volonté", "reaction",
-        "OSEF",
-        "idem",
-        ["commun", "autre", 2]
     ]
 
 }

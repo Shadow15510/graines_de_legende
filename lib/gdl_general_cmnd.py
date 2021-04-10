@@ -89,18 +89,14 @@ class GeneralCommands(commands.Cog):
             await ctx.send("*Erreur : vous n'est pas un joueur.*")
             return
 
-        if player.stat[8][0] + player.stat[8][1] != 0:
-            await ctx.send("*Erreur : vous ne pouvez pas changer votre expérience une fois la partie commencée.*")
-            return
+        if player.stat[8][0] + player.stat[8][1] == 0:
+            player.stat[9] = player.stat[12]
+            player.archetype[0][1] = 1
+            player.capacities[1].append([get_capa_from_name(self.capa_data, player.species.lower(), 2)[0], 1])
 
-        player.stat[9] = player.stat[12]
-        player.stat[8][1] = args[0]
-        player.stat[10][0] = 10 * args[0]
+        player.stat[8][1] += args[0]
 
-        player.archetype[0][1] = 1
-        player.capacities[1].append([get_capa_from_name(self.capa_data, player.species.lower(), 2)[0], 1])
-
-        await ctx.send(f"L'expérience de {player.name} a été réglée sur {args[0]}\nVotre personnage est terminé !")
+        await ctx.send(f"{player.name} a gagné {args[0]} point{('', 's')[args[0] > 1]} d'expériences")
         export_save(self.player_data)
 
 
